@@ -1,0 +1,5 @@
+1. Dockerfile organiza a aplicação e deixa ela em um formato de imagem com tudo dela pronto para rodar. Já o Compose orquestra o/os Dockerfile/s para serem rodados em um container com todas as variáveis de ambiente e outras informações que não cabem ao Dockerfile para uma organização e fluxo de trabalho melhores.
+2. Ele usa database pois pega o endereço interno que o motor do Docker utiliza para rodar a aplicação, e não o IP comum da máquina onde o Windows/Linux estão sendo rodados.
+3. deepends_on simples apenas especifica de qual serviço o alvo depende para rodar. Já uma dependência baseada em healthcheck é mais geral e quer dizer que o container só vai rodar se aquela aplicação inteira estiver saudável.
+4. Pois o Docker já cria uma rede interna que já sabe automaticamente qual a porta do PostgreSQL
+5. o volume /var/lib/postgresql/data que é onde todos os dados do banco são persistidos.

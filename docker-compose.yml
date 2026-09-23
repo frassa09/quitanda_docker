@@ -1,0 +1,60 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: FRONTEND
+    container_name: quitanda-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - server
+  
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: BACKEND
+    container_name: quitanda-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USER=quitanda-user
+      - DB_PASS=56788269
+      - DB_HOST=database
+      - DB_NAME=quitanda-db
+      - DB_PORT=5432
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:16-alpine
+    container_name: quitanda-db
+    restart: always
+    environment:
+      - POSTGRES_DB=quitanda-db
+      - POSTGRES_USER=quitanda-user
+      - POSTGRES_PASSWORD=56788269
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./bd_inicial:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quitanda-user -d quitanda-db"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  dbdata:
